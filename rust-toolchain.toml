@@ -1,0 +1,4 @@
+# Diz ao rustup qual toolchain/alvos este projeto usa (instala automaticamente).
+[toolchain]
+channel = "stable"
+targets = ["x86_64-pc-windows-msvc"]

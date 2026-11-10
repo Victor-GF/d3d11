@@ -1,0 +1,16 @@
+# Configuração do Cargo para este projeto (vale para qualquer `cargo build/run`).
+
+[build]
+# Compila sempre para o ABI MSVC do Windows (o toolchain padrão desta máquina é o GNU).
+target = "x86_64-pc-windows-msvc"
+
+[target.x86_64-pc-windows-msvc]
+# Usa o LLD que já vem com o Rust -> não precisa do Visual Studio / link.exe instalado.
+linker = "rust-lld"
+rustflags = [
+    "-C", "linker-flavor=lld-link",       # fala com o rust-lld no "dialeto" do link.exe
+    "-C", "target-feature=+crt-static",   # não puxa vcruntime/msvcrt dinamicamente
+    "-C", "link-arg=/NODEFAULTLIB",       # nenhuma lib padrão (sem CRT)
+    "-C", "link-arg=/ENTRY:mainCRTStartup", # primeira função executada pelo Windows
+    "-C", "link-arg=/SUBSYSTEM:WINDOWS",  # app com janela, sem console (CONSOLE p/ app de terminal)
+]
