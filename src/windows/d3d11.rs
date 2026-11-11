@@ -781,6 +781,23 @@ pub struct ID3D11Device {
     pub lpVtbl: *const ID3D11DeviceVtbl,
 }
 
+impl ID3D11Device {
+    pub unsafe fn CreateRenderTargetView(&self,
+        pResource: *mut ID3D11Resource,
+        pDesc: *const D3D11_RENDER_TARGET_VIEW_DESC,
+        ppRTView: *mut *mut ID3D11RenderTargetView,
+    ) -> HRESULT {
+        unsafe {
+            ((*self.lpVtbl).CreateRenderTargetView)(
+                self as *const _ as *mut _,
+                pResource,
+                pDesc,
+                ppRTView,
+            )
+        }
+    }
+}
+
 #[repr(C)]
 pub struct ID3D11DeviceVtbl {
     pub base: IUnknownVtbl,

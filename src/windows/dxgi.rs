@@ -10,8 +10,8 @@ use super::minwindef::{BOOL, UINT};
 use super::unknwn::IUnknownVtbl;
 use super::windef::HWND;
 use super::winnt::HRESULT;
-use core::ffi::c_void;
 use crate::layout;
+use core::ffi::c_void;
 
 // ---- DXGI_USAGE -----------------------------------------------------------
 
@@ -124,11 +124,32 @@ pub struct IDXGISwapChain {
     pub lpVtbl: *const IDXGISwapChainVtbl,
 }
 
+impl IDXGISwapChain {
+    pub unsafe fn GetDesc(&self, pDesc: *mut DXGI_SWAP_CHAIN_DESC) -> HRESULT {
+        unsafe { ((*self.lpVtbl).GetDesc)(self as *const _ as *mut _, pDesc) }
+    }
+
+    pub unsafe fn GetBuffer(
+        &self,
+        Buffer: UINT,
+        riid: REFIID,
+        ppSurface: *mut *mut c_void,
+    ) -> HRESULT {
+        unsafe {
+            ((*self.lpVtbl).GetBuffer)(self as *const _ as *mut _, Buffer, riid, ppSurface)
+        }
+    }
+}
+
 #[repr(C)]
 pub struct IDXGISwapChainVtbl {
     pub base: IDXGIDeviceSubObjectVtbl,
     /// `SyncInterval` 1 = espera o vsync; 0 = apresenta ja.
-    pub Present: unsafe extern "system" fn(This: *mut IDXGISwapChain, SyncInterval: UINT, Flags: UINT) -> HRESULT,
+    pub Present: unsafe extern "system" fn(
+        This: *mut IDXGISwapChain,
+        SyncInterval: UINT,
+        Flags: UINT,
+    ) -> HRESULT,
     /// Buffer 0 = back buffer; `riid` costuma ser `IID_ID3D11Texture2D`.
     pub GetBuffer: unsafe extern "system" fn(
         This: *mut IDXGISwapChain,
@@ -138,7 +159,10 @@ pub struct IDXGISwapChainVtbl {
     ) -> HRESULT,
     pub SetFullscreenState: usize,
     pub GetFullscreenState: usize,
-    pub GetDesc: unsafe extern "system" fn(This: *mut IDXGISwapChain, pDesc: *mut DXGI_SWAP_CHAIN_DESC) -> HRESULT,
+    pub GetDesc: unsafe extern "system" fn(
+        This: *mut IDXGISwapChain,
+        pDesc: *mut DXGI_SWAP_CHAIN_DESC,
+    ) -> HRESULT,
     pub ResizeBuffers: usize,
     pub ResizeTarget: usize,
     pub GetContainingOutput: usize,

@@ -2,6 +2,8 @@
 name = "d3d11"
 version = "0.1.0"
 edition = "2024"
+# Com dois binarios (o app e src/bin/crt_check.rs), `cargo run` sozinho roda o app.
+default-run = "d3d11"
 
 # O arquivo do ponto de entrada não é o padrão (src/main.rs), então declaramos aqui.
 [[bin]]

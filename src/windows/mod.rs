@@ -26,6 +26,30 @@ macro_rules! layout {
     };
 }
 
+/// O `L"texto"` do C: string UTF-16 terminada em zero, montada em tempo de
+/// compilacao. Devolve um `LPCWSTR` (`*const u16`) valido pelo programa todo.
+/// So aceita ASCII (o suficiente para nomes de arquivo, classes de janela etc.);
+/// um caractere fora disso e erro de compilacao.
+///
+/// `D3DCompileFromFile(w!("gpu.hlsl"), ...)`
+#[macro_export]
+macro_rules! w {
+    ($s:literal) => {{
+        const BYTES: &[u8] = $s.as_bytes();
+        static WIDE: [u16; BYTES.len() + 1] = {
+            let mut out = [0u16; BYTES.len() + 1];
+            let mut i = 0;
+            while i < BYTES.len() {
+                assert!(BYTES[i] < 0x80, "w!: so ASCII");
+                out[i] = BYTES[i] as u16;
+                i += 1;
+            }
+            out
+        };
+        WIDE.as_ptr()
+    }};
+}
+
 mod audioclient;
 mod audiosessiontypes;
 mod basetsd;
@@ -33,6 +57,7 @@ mod combaseapi;
 mod consoleapi;
 mod d3d11;
 mod d3dcommon;
+mod d3dcompiler;
 mod debugapi;
 mod dxgi;
 mod dxgicommon;
@@ -77,6 +102,7 @@ pub use combaseapi::*;
 pub use consoleapi::*;
 pub use d3d11::*;
 pub use d3dcommon::*;
+pub use d3dcompiler::*;
 pub use debugapi::*;
 pub use dxgi::*;
 pub use dxgicommon::*;
